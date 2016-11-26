@@ -1,6 +1,10 @@
+
+
 window.addEventListener('DOMContentLoaded', function(){
     // get the canvas DOM element
     var canvas = document.getElementById('renderCanvas');
+
+
 
     // load the 3D engine
     var engine = new BABYLON.Engine(canvas, true);
@@ -9,13 +13,16 @@ window.addEventListener('DOMContentLoaded', function(){
     var createScene = function(){
         // create a basic BJS Scene object
         var scene = new BABYLON.Scene(engine);
-        var camera = new BABYLON.ArcRotateCamera("Camera", 5, 0.9, 200, new BABYLON.Vector3.Zero(), scene);
+        var camera = new BABYLON.ArcRotateCamera("Camera", 5, 0.9, 200, new BABYLON.Vector3.Zero(), scene); //NOT OK ZA NAJEN PROJEK!!!
+
+        //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);  // TA je taprava sam NEVEM KAKO NARDIT DA TO DELA
 
         // target the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
 
         // Attach it to handle user inputs (keyboard, mouse, touch)
         camera.attachControl(canvas, false);
+
 
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
@@ -24,8 +31,8 @@ window.addEventListener('DOMContentLoaded', function(){
         var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
             'your-mesh-name',
             '/path/to/heightmap.png',
-            200, // width of the ground mesh (x axis)
-            200, // depth of the ground mesh (z axis)
+            800, // width of the ground mesh (x axis)
+            600, // depth of the ground mesh (z axis)
             40,  // number of subdivisions
             1,   // min height
             1,  // max height
@@ -61,4 +68,7 @@ window.addEventListener('DOMContentLoaded', function(){
         engine.resize();
     });
 })
+
+
+
 

@@ -13,9 +13,14 @@ window.addEventListener('DOMContentLoaded', function(){
     var createScene = function(){
         // create a basic BJS Scene object
         var scene = new BABYLON.Scene(engine);
-        var camera = new BABYLON.ArcRotateCamera("Camera", 5, 0.9, 200, new BABYLON.Vector3.Zero(), scene); //NOT OK ZA NAJEN PROJEK!!!
 
-        //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);  // TA je taprava sam NEVEM KAKO NARDIT DA TO DELA
+        //gravity
+        scene.gravity = new BABYLON.Vector3(0, -2.0, 0);
+
+         // var camera = new BABYLON.ArcRotateCamera("Camera", 5, 0.9, 200, new BABYLON.Vector3.Zero(), scene); //Pogeld od zgoraj
+          var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(50, 50, 0), scene);  // Game kamera
+
+
 
         // target the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
@@ -34,16 +39,16 @@ window.addEventListener('DOMContentLoaded', function(){
             800, // width of the ground mesh (x axis)
             600, // depth of the ground mesh (z axis)
             40,  // number of subdivisions
-            1,   // min height
-            1,  // max height
+            10,   // min height
+            20,  // max height
             scene,
             false, // updateable?
             null // callback when mesh is ready
         )
 
         var material = new BABYLON.StandardMaterial('ground', scene);
-        //material.wireframe = true;
-        material.diffuseTexture = new BABYLON.Texture("textures/sand.jpg", scene);
+       // material.wireframe = true;
+        material.diffuseTexture = new BABYLON.Texture("textures/wall1.png", scene);
         //material.alpha = 0.5;
         material.diffuseTexture.uScale = 5.0;
         material.diffuseTexture.vScale = 5.0;
@@ -51,6 +56,15 @@ window.addEventListener('DOMContentLoaded', function(){
         ground.material = material;
 
 
+        //Collision
+        camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+        scene.collisionsEnabled = true;
+        camera.checkCollisions = true;
+        ground.checkCollisions = true;
+
+        //apply gravity
+        camera.applyGravity = true;
+        
         // return the created scene
         return scene;
     }

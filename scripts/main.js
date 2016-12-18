@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', function(){
         cameraArcRotative[0].upperRadiusLimit = 150;
         scene.activeCamera = cameraArcRotative[0];
         cameraArcRotative[0].setTarget(new BABYLON.Vector3(-50,50,0));
-        cameraArcRotative[0].attachControl(canvas);
+        cameraArcRotative[0].attachControl(canvas, false);
 
         Light(scene);   //inicializacija luči in neba
         Ground(scene);  //inicializacija in izris tal
@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', function(){
         Mur.checkCollisions = true;
 
         //importaj našega igralca
-        BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "Dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
             meshPlayer = newMeshes[0];
             meshOctree = newMeshes;
             cameraArcRotative[0].alpha = -parseFloat(meshPlayer.rotation.y) + 4.69;     //kam je naš igralec obrnjen na začetku
@@ -76,6 +76,61 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("resize", function () { engine.resize();}); // the canvas/window resize event handler
         window.addEventListener("keydown", onKeyDown, false);
         window.addEventListener("keyup", onKeyUp, false);
+
+        //premikanje igralca, brez tiščanja miške
+        canvas.addEventListener("click", function(evt) {
+            canvas.requestPointerLock = canvas.requestPointerLock;
+            if (canvas.requestPointerLock) {
+                canvas.requestPointerLock();
+            }
+        }, false);
+
+        //Tarča
+        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
+        //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
+        sphere.position.y = 60;
+        sphere.position.x = 150;
+        sphere.position.z = -150;
+        sphere.isPickable = true;
+        sphere.checkCollisions = true;
+        sphere.actionManager = new BABYLON.ActionManager(scene);
+
+        var materialSphere1 = new BABYLON.StandardMaterial("texture1", scene);
+        sphere.material = materialSphere1;
+
+        sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
+            sphere.material.emissiveColor = BABYLON.Color3.Blue();
+            //scene.hoverCursor = "textures/viseur.png') 12 12, auto ";
+        }));
+
+        sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function(ev){
+            sphere.material.emissiveColor = BABYLON.Color3.Black();
+        }));
+
+        /*var pointerlockchange = function (event) {
+            _this.controlEnabled = (
+            document.mozPointerLockElement === canvas
+            || document.webkitPointerLockElement === canvas
+            || document.msPointerLockElement === canvas
+            || document.pointerLockElement === canvas);
+            // If the user is alreday locked
+            if (!_this.controlEnabled) {
+                _this.camera.detachControl(canvas);
+            } else {
+                _this.camera.attachControl(canvas);
+            }
+        };*/
+
+        //Nebo
+        var skybox = BABYLON.Mesh.CreateSphere("skyBox", 32, 1000.0, scene);
+        skybox.position.y = 50;
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = new BABYLON.Texture("textures/TropicalSunnyDay_px.jpg", scene);
+        //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay_nz.jpg", scene);
+        skybox.material = skyboxMaterial;
+        //skybox.layerMask = 2; // 010 in binary
+
 
         // return the created scene
         return scene;
@@ -165,6 +220,12 @@ window.addEventListener('DOMContentLoaded', function(){
             meshPlayer.moveWithCollisions(right);
         }
     }
+
+    // Attach events to the document
+    /*document.addEventListener("pointerlockchange", pointerlockchange, false);
+    document.addEventListener("mspointerlockchange", pointerlockchange, false);
+    document.addEventListener("mozpointerlockchange", pointerlockchange, false);
+    document.addEventListener("webkitpointerlockchange", pointerlockchange, false);*/
 
     function CameraFollowActor()
     {

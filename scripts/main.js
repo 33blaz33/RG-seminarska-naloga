@@ -119,16 +119,45 @@ window.addEventListener('DOMContentLoaded', function(){
             } else {
                 _this.camera.attachControl(canvas);
             }
-        };*/
+        };
+
+        Nebo backup---
+         var skybox = BABYLON.Mesh.CreateSphere("skyBox", 32, 1000.0, scene);
+         skybox.position.y = 50;
+         var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+         skyboxMaterial.backFaceCulling = false;
+         skyboxMaterial.reflectionTexture = new BABYLON.Texture("textures/TropicalSunnyDay_px.jpg", scene);
+         //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay_nz.jpg", scene);
+         skybox.material = skyboxMaterial;
+
+        */
+
 
         //Nebo
-        var skybox = BABYLON.Mesh.CreateSphere("skyBox", 32, 1000.0, scene);
-        skybox.position.y = 50;
+        var skybox = BABYLON.Mesh.CreateBox("skyBox",10000.0, scene);
         var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
         skyboxMaterial.backFaceCulling = false;
-        skyboxMaterial.reflectionTexture = new BABYLON.Texture("textures/TropicalSunnyDay_px.jpg", scene);
-        //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay_nz.jpg", scene);
+        skyboxMaterial.disableLighting = true;
         skybox.material = skyboxMaterial;
+        skybox.infiniteDistance = true;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", scene);
+
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+
+
+
+
+
+
+        //Fog
+        /*
+        scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+        scene.fogDensity = 0.01;
+        scene.fogStart = 20.0;
+        scene.fogEnd = 60.0;
+        scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85); */
         //skybox.layerMask = 2; // 010 in binary
 
 

@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var playerIsIdle = false;                               //vemo kdaj je animacija na premoru
     var sceneCharger = false;
     var movmentSpeed = 1;                                   //nižja, ko je številka, večja hitrost [1-0)
-
+    var cursorIsOnTarget = false;                          //vemo, če smo namerili v tarčo
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -76,7 +76,14 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("resize", function () { engine.resize();}); // the canvas/window resize event handler
         window.addEventListener("keydown", onKeyDown, false);
         window.addEventListener("keyup", onKeyUp, false);
-
+        canvas.onclick = function () {
+            //če je miška čez tarčo in smo ustrelili, izbrišemo tarčo
+            if(cursorIsOnTarget){
+                console.log("Tarča je uničena");
+                sphere.dispose();
+            }
+        }
+        
         //premikanje igralca, brez tiščanja miške
         canvas.addEventListener("click", function(evt) {
             canvas.requestPointerLock = canvas.requestPointerLock;
@@ -84,6 +91,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 canvas.requestPointerLock();
             }
         }, false);
+
 
         //Tarča
         var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
@@ -100,11 +108,12 @@ window.addEventListener('DOMContentLoaded', function(){
 
         sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
             sphere.material.emissiveColor = BABYLON.Color3.Blue();
-            //scene.hoverCursor = "textures/viseur.png') 12 12, auto ";
+            cursorIsOnTarget = true;
         }));
 
         sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function(ev){
             sphere.material.emissiveColor = BABYLON.Color3.Black();
+            cursorIsOnTarget = false;
         }));
 
         /*var pointerlockchange = function (event) {
@@ -145,10 +154,6 @@ window.addEventListener('DOMContentLoaded', function(){
         skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", scene);
 
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-
-
-
-
 
 
         //Fog
@@ -249,12 +254,6 @@ window.addEventListener('DOMContentLoaded', function(){
             meshPlayer.moveWithCollisions(right);
         }
     }
-
-    // Attach events to the document
-    /*document.addEventListener("pointerlockchange", pointerlockchange, false);
-    document.addEventListener("mspointerlockchange", pointerlockchange, false);
-    document.addEventListener("mozpointerlockchange", pointerlockchange, false);
-    document.addEventListener("webkitpointerlockchange", pointerlockchange, false);*/
 
     function CameraFollowActor()
     {

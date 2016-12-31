@@ -23,6 +23,10 @@ function Ground(scene) {
         null // callback when meshPlayer is ready
     );
 
+
+
     ground.material = material;
     ground.checkCollisions = true;
+
+
 }

@@ -83,6 +83,7 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("resize", function () { engine.resize();}); // the canvas/window resize event handler
         window.addEventListener("keydown", onKeyDown, false);
         window.addEventListener("keyup", onKeyUp, false);
+        window.addEventListener("keydown", onKeyR, false);
 
 
        /* canvas.onclick = function () {
@@ -129,34 +130,55 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
         //Strelanje animacija metkov in uničenje tarče
+        var ammunition = 12;
         window.addEventListener("click", function (e) {
 
-            var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
-            var startPos = cameraArcRotative[0].position;
+            if(ammunition > 0) {
+                var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
+                var startPos = cameraArcRotative[0].position;
 
-            bullet.position = new BABYLON.Vector3(startPos.x, startPos.y, startPos.z);
-            bullet.material =  new BABYLON.StandardMaterial("textures/bullet_bottom.png", scene);
-            bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
+                bullet.position = new BABYLON.Vector3(startPos.x, startPos.y, startPos.z);
+                bullet.material = new BABYLON.StandardMaterial("textures/bullet_bottom", scene);
+                bullet.material.diffuseTexture = new BABYLON.Texture("texture1", scene);
+                bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
 
-            var invView = new BABYLON.Matrix();
-            cameraArcRotative[0].getViewMatrix().invertToRef(invView);
-            var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
+                var invView = new BABYLON.Matrix();
+                cameraArcRotative[0].getViewMatrix().invertToRef(invView);
+                var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
 
-            direction.normalize();
+                direction.normalize();
 
-            scene.registerBeforeRender(function () {
-                bullet.position.addInPlace(direction);
-                if (bullet.intersectsMesh(sphere, false)) {
-                    sphere.dispose();
-                    bullet.dispose();
+                //Stetje metkov
+                ammunition--;
+                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition;
 
-                } else {
-                    sphere.material.emissiveColor = new BABYLON.Color3(0, 0, 1);
-                }
 
-            });
+                //on hit spehere zgine
+                scene.registerBeforeRender(function () {
+                    bullet.position.addInPlace(direction);
+                    if (bullet.intersectsMesh(sphere, false)) {
+                        sphere.dispose();
+                        bullet.dispose();
 
+                    } else {
+                        sphere.material.emissiveColor = new BABYLON.Color3(0, 0, 1);
+                    }
+
+                });
+
+            }else{
+                document.getElementById("ammoLabel").innerHTML = "You are out of ammo press R to reload!";
+            }
         });
+
+        function onKeyR(event) {
+            var ch = String.fromCharCode(event.keyCode);
+            if(ch == "R" || ch =="r") {
+                ammunition = 12;
+                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition;
+            }
+
+        }
 
 
 
@@ -319,6 +341,7 @@ window.addEventListener('DOMContentLoaded', function(){
         if (ch == "S") keys.arriere = 1;
         if (ch == "D") keys.right   = 1;
     }
+
 
 
     function onKeyUp(event)

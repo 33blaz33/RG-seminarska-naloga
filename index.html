@@ -9,6 +9,8 @@
 	<script src="./scripts/Ground.js"></script>
 	<script src="./scripts/Light.js"></script>
 	<script src="./scripts/Target.js"></script>
+	<script src="babylon.2.1.js"></script>
+	<script src="babylon.objFileLoader.js"></script>
 	<link rel="stylesheet" href="./style/styleSheet.css" type="text/css">
 	<style>
 		#gunsight {
@@ -18,10 +20,19 @@
 			margin-top:-37px;
 			margin-left:-37px;
 		}
+
+		#ammoLabel {
+			position:absolute;
+			top:20px;
+			left : 20px;
+			color:white;
+			font-size: 2em;
+		}
 	</style>
 </head>
 <body>
 	<img id="gunsight" src="textures/viseur.png" />
 	<canvas id="renderCanvas"></canvas>
+	<p id="ammoLabel">Ammo: 12</p>
 </body>
 </html>

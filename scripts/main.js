@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var keys = {letft:0, right:0, arriere:0, avancer:0};    //tipke, ki jih poslušamo
     var cameraArcRotative = [];                             //kamera
     var meshPlayer;                                         //naš igralec
+    var meshAmmobag;
     var PlayAnnimation = false;                             //ali animiramo našega igralca
     var meshOctree;
     var octree;
@@ -77,6 +78,12 @@ window.addEventListener('DOMContentLoaded', function(){
         });
 
 
+        //ammo box... ne dela
+        BABYLON.SceneLoader.ImportMesh("ammobag","Scenes/ammobag/","ammobag.babylon",scene,function (newMeshes, particleSystems) {
+            newMeshes[0].position = BABYLON.Vector3.Zero()
+        });
+
+
 
 
         //Poslušanje tipk
@@ -104,6 +111,24 @@ window.addEventListener('DOMContentLoaded', function(){
         }, false);
 
 
+        //ammo box
+        //Simple create
+        var ammobox = BABYLON.Mesh.CreateBox("ammobox1", 20, scene);
+        ammobox.material = new BABYLON.StandardMaterial("Mat", scene);
+        ammobox.material.diffuseTexture = new BABYLON.Texture("textures/ammobox.jpg", scene);
+        ammobox.position = new BABYLON.Vector3(10, 50, -100);
+        ammobox.checkCollisions = true;
+
+/*
+        scene.registerBeforeRender(function () {
+            if (meshPlayer.intersectsMesh(ammobox, false)) {
+                ammobox.dispose();
+                allAmmunition = allAmmunition + 12;
+            }
+        });
+*/
+
+
         //Tarča
         var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
         //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
@@ -114,10 +139,10 @@ window.addEventListener('DOMContentLoaded', function(){
         sphere.checkCollisions = true;
         sphere.actionManager = new BABYLON.ActionManager(scene);
 
-        var materialSphere1 = new BABYLON.StandardMaterial("textures/target", scene);
+        var materialSphere1 = new BABYLON.StandardMaterial("textures/wall1", scene);
         sphere.material = materialSphere1;
 
-
+/*
         sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
             sphere.material.emissiveColor = BABYLON.Color3.Blue();
             cursorIsOnTarget = true;
@@ -127,49 +152,67 @@ window.addEventListener('DOMContentLoaded', function(){
             sphere.material.emissiveColor = BABYLON.Color3.Black();
             cursorIsOnTarget = false;
         }));
+*/
+
+        //premikanje
+        var angle = 0;
+        scene.registerBeforeRender(function () {
+            sphere.position.x = 150 * Math.cos(angle);
+            sphere.position.z = 1060 * Math.sin(angle);
+            angle += 0.01 * scene.getAnimationRatio();
+
+        });
 
 
         //Strelanje animacija metkov in uničenje tarče
         var ammunition = 12;
+        var allAmmunition = 36;
         window.addEventListener("click", function (e) {
 
-            if(ammunition > 0) {
-                var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
-                var startPos = cameraArcRotative[0].position;
+            if(allAmmunition < 0)
+                document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
+            else {
+                if (ammunition > 0) {
+                    var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
+                    var startPos = cameraArcRotative[0].position;
 
-                bullet.position = new BABYLON.Vector3(startPos.x, startPos.y, startPos.z);
-                bullet.material = new BABYLON.StandardMaterial("textures/bullet_bottom", scene);
-                bullet.material.diffuseTexture = new BABYLON.Texture("texture1", scene);
-                bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
+                    bullet.position = new BABYLON.Vector3(startPos.x, startPos.y, startPos.z);
+                    bullet.material = new BABYLON.StandardMaterial("textures/bullet_bottom", scene);
+                    bullet.material.diffuseTexture = new BABYLON.Texture("texture1", scene);
+                    bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
 
-                var invView = new BABYLON.Matrix();
-                cameraArcRotative[0].getViewMatrix().invertToRef(invView);
-                var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
+                    var invView = new BABYLON.Matrix();
+                    cameraArcRotative[0].getViewMatrix().invertToRef(invView);
+                    var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
 
-                direction.normalize();
+                    direction.normalize();
 
-                //Stetje metkov
-                ammunition--;
-                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition;
-
-
-                //on hit spehere zgine
-                scene.registerBeforeRender(function () {
-                    bullet.position.addInPlace(direction);
-                    if (bullet.intersectsMesh(sphere, false)) {
-                        sphere.dispose();
-                        bullet.dispose();
-                        //console.log("kakaka");
+                    //Stetje metkov
+                    ammunition--;
+                    document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
 
 
-                    } else {
-                        sphere.material.emissiveColor = new BABYLON.Color3(0, 0, 1);
-                    }
+                    //on hit spehere zgine
+                    scene.registerBeforeRender(function () {
+                        bullet.position.addInPlace(direction);
+                        if (bullet.intersectsMesh(sphere, false)) {
+                            sphere.dispose();
+                            bullet.dispose();
 
-                });
+                        }
 
-            }else{
-                document.getElementById("ammoLabel").innerHTML = "You are out of ammo press R to reload!";
+                        if(bullet.intersectsMesh(ammobox,false)){
+                            ammobox.dispose();
+                                allAmmunition+=1;
+
+                            
+                        }
+
+                    });
+
+                } else {
+                    document.getElementById("ammoLabel").innerHTML = "You are out of ammo press R to reload!";
+                }
             }
         });
 
@@ -177,7 +220,8 @@ window.addEventListener('DOMContentLoaded', function(){
             var ch = String.fromCharCode(event.keyCode);
             if(ch == "R" || ch =="r") {
                 ammunition = 12;
-                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition;
+                allAmmunition = allAmmunition - ammunition;
+                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
             }
 
         }

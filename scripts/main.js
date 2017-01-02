@@ -159,6 +159,8 @@ window.addEventListener('DOMContentLoaded', function(){
                     if (bullet.intersectsMesh(sphere, false)) {
                         sphere.dispose();
                         bullet.dispose();
+                        //console.log("kakaka");
+
 
                     } else {
                         sphere.material.emissiveColor = new BABYLON.Color3(0, 0, 1);

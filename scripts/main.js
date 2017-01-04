@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function(){
             sphere.material = materialSphere1;
 
 
-/*
+/*4545
         sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
             sphere.material.emissiveColor = BABYLON.Color3.Blue();
             cursorIsOnTarget = true;

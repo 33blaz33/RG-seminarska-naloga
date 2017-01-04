@@ -78,6 +78,11 @@ window.addEventListener('DOMContentLoaded', function(){
         });
 
 
+        //Ulica(test)
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "street.babylon", scene, function (newMeshes, particleSystems) {});
+
+        
+
         //ammo box... ne dela
         BABYLON.SceneLoader.ImportMesh("ammobag","Scenes/ammobag/","ammobag.babylon",scene,function (newMeshes, particleSystems) {
             newMeshes[0].position = BABYLON.Vector3.Zero()
@@ -130,17 +135,19 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
         //Tarča
-        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
-        //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
-        sphere.position.y = 60;
-        sphere.position.x = 150;
-        sphere.position.z = -150;
-        sphere.isPickable = true;
-        sphere.checkCollisions = true;
-        sphere.actionManager = new BABYLON.ActionManager(scene);
 
-        var materialSphere1 = new BABYLON.StandardMaterial("textures/wall1", scene);
-        sphere.material = materialSphere1;
+            var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
+            //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
+            sphere.position.y = 60;
+            sphere.position.x = 150;
+            sphere.position.z = -150;
+            sphere.isPickable = true;
+            sphere.checkCollisions = true;
+            sphere.actionManager = new BABYLON.ActionManager(scene);
+
+            var materialSphere1 = new BABYLON.StandardMaterial("textures/wall1", scene);
+            sphere.material = materialSphere1;
+
 
 /*
         sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
@@ -154,15 +161,31 @@ window.addEventListener('DOMContentLoaded', function(){
         }));
 */
 
-        //premikanje
-        var angle = 0;
+
+
+        //premikanje vseh tarč
+
+        var angle=0;
         scene.registerBeforeRender(function () {
-            sphere.position.x = 150 * Math.cos(angle);
-            sphere.position.z = 1060 * Math.sin(angle);
-            angle += 0.01 * scene.getAnimationRatio();
+
+                sphere.position.x = 150 * Math.cos(angle);
+                sphere.position.z = 1060 * Math.sin(angle);
+                angle += 0.01* scene.getAnimationRatio();
 
         });
 
+
+
+//premikanje ene tarče
+        /*
+        var angle=0;
+        scene.registerBeforeRender(function () {
+                sphere.position.x = 150 * Math.cos(angle);
+                sphere.position.z = 1060 * Math.sin(angle);
+                angle += 0.01 * scene.getAnimationRatio();
+
+        });
+*/
 
         //Strelanje animacija metkov in uničenje tarče
         var ammunition = 12;

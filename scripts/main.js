@@ -17,6 +17,8 @@ window.addEventListener('DOMContentLoaded', function(){
     var sceneCharger = false;
     var movmentSpeed = 1;                                   //nižja, ko je številka, večja hitrost [1-0)
     var cursorIsOnTarget = false;                          //vemo, če smo namerili v tarčo
+    var start = 0;
+    var end = 100;
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -65,8 +67,8 @@ window.addEventListener('DOMContentLoaded', function(){
             skeletonsPlayer.push(skeletons[0]);
 
             var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
-            var start = 0;
-            var end = 100;
+            //var start = 0;
+            //var end = 100;
             var animationSpeed = 100 / 100;
             scene.beginAnimation(skeletons[0], 100*start/totalFrame, 100*end/totalFrame, true, animationSpeed);
 
@@ -78,14 +80,20 @@ window.addEventListener('DOMContentLoaded', function(){
         });
 
 
+/*
         //Ulica(test)
-        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "street.babylon", scene, function (newMeshes, particleSystems) {});
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "street.babylon", scene, function (newMeshes) {
+            newMeshes[0].scaling = new BABYLON.Vector3(2, 2, 3);
+            cameraArcRotative[0].target = newMeshes[0]
+        });*/
 
-        
+
+
 
         //ammo box... ne dela
         BABYLON.SceneLoader.ImportMesh("ammobag","Scenes/ammobag/","ammobag.babylon",scene,function (newMeshes, particleSystems) {
-            newMeshes[0].position = BABYLON.Vector3.Zero()
+            meshAmmobag = newMeshes[0]
+            meshAmmobag.scaling = new BABYLON.Vector3(20, 20, 20);
         });
 
 
@@ -350,8 +358,8 @@ window.addEventListener('DOMContentLoaded', function(){
         //animiraj hojo, če sta pritisnjena gumb za naprej, ali za nazaj
         if(PlayAnnimation === false && (keys.avancer == 1 || keys.arriere == 1 || keys.letft == 1 || keys.right == 1)) {
             var totalFrame = skeletonsPlayer[0]._scene._activeSkeletons.data.length;    //vsi frami animacije
-            var start = 0;                                                              //koliko animacije izvedemo
-            var end   = 100;                                                            //koliko animacije izvedemo
+            //var start = 0;                                                              //koliko animacije izvedemo
+            //var end   = 100;                                                            //koliko animacije izvedemo
             var animationSpeed = parseFloat(100 / 100);                                 //hitrost animacije
 
             //TO DO: POPRAVI, START IN END, ČE SE NEHAŠ PREMIKATI SREDI ANIMACIJE

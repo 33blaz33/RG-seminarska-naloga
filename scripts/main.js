@@ -29,20 +29,12 @@ window.addEventListener('DOMContentLoaded', function(){
         scene.collisionsEnabled = true;
         Ground(scene);
 
-        //inicializacija kamere
-        /*var camera=new BABYLON.ArcRotateCamera("camera",1,1,180,BABYLON.Vector3.Zero(),scene);
-         //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(50, 50, 0), scene);  // Game kamera
-        camera.setTarget(new BABYLON.Vector3(0,40,0));
-        camera.attachControl(canvas, true);*/
-
-        //cameraArcRotative[0] = new BABYLON.ArcRotateCamera("CameraRotate", 1, 1,1, new BABYLON.Vector3(1, 1, 1), scene);
-        //cameraArcRotative[0] = new BABYLON.ArcRotateCamera("camera",1,1,180,BABYLON.Vector3.Zero(),scene);
         cameraArcRotative[0] = new BABYLON.ArcRotateCamera("CameraRotate", -Math.PI/5, Math.PI/2.2, 12, new BABYLON.Vector3(100, 70, 0), scene);
         cameraArcRotative[0].wheelPrecision = 15;
         cameraArcRotative[0].lowerRadiusLimit = 0.0001;
         cameraArcRotative[0].upperRadiusLimit = 150;
         scene.activeCamera = cameraArcRotative[0];
-        cameraArcRotative[0].setTarget(new BABYLON.Vector3(-50,50,0));
+        cameraArcRotative[0].setTarget(new BABYLON.Vector3(50,80, 500));
         cameraArcRotative[0].attachControl(canvas, false);
 
         Light(scene);   //inicializacija luči in neba
@@ -61,10 +53,11 @@ window.addEventListener('DOMContentLoaded', function(){
         BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
             meshPlayer = newMeshes[0];
             meshOctree = newMeshes;
-            cameraArcRotative[0].alpha = -parseFloat(meshPlayer.rotation.y) + 2.69;     //kam je naš igralec obrnjen na začetku
-
+            cameraArcRotative[0].alpha = -parseFloat(meshPlayer.rotation.y) + 2.69;     //kam je naš igralec obrnjen na začetku  +2.69
             skeletonsPlayer[0] = skeletons[0];
             skeletonsPlayer.push(skeletons[0]);
+
+
 
             var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
             //var start = 0;
@@ -88,11 +81,19 @@ window.addEventListener('DOMContentLoaded', function(){
         });*/
 
 
+        //Zvoki
+        //Gun
+        var gunshot = new BABYLON.Sound("gunshot", "sound/gunshot.wav", scene);
+        var guntrigerclick = new BABYLON.Sound("guntrigger", "sound/guntriggerclick.wav", scene);
+        var guncocking = new BABYLON.Sound("guncocking", "sound/guncocking.wav", scene);
+        //box
+        var boxbreak = new BABYLON.Sound("boxbreak", "sound/boxbreak.wav", scene);
+
 
 
         //ammo box... ne dela
         BABYLON.SceneLoader.ImportMesh("ammobag","Scenes/ammobag/","ammobag.babylon",scene,function (newMeshes, particleSystems) {
-            meshAmmobag = newMeshes[0]
+            meshAmmobag = newMeshes[0];
             meshAmmobag.scaling = new BABYLON.Vector3(20, 20, 20);
         });
 
@@ -106,14 +107,6 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("keydown", onKeyR, false);
 
 
-       /* canvas.onclick = function () {
-            //če je miška čez tarčo in smo ustrelili, izbrišemo tarčo
-            if(cursorIsOnTarget){
-                console.log("Tarča je uničena");
-                sphere.dispose();
-            }
-        }
-        */
         //premikanje igralca, brez tiščanja miške
 
         canvas.addEventListener("click", function(evt) {
@@ -125,7 +118,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
         //ammo box
-        //Simple create
         var ammobox = BABYLON.Mesh.CreateBox("ammobox1", 20, scene);
         ammobox.material = new BABYLON.StandardMaterial("Mat", scene);
         ammobox.material.diffuseTexture = new BABYLON.Texture("textures/ammobox.jpg", scene);
@@ -143,7 +135,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
         //Tarča
-
             var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
             //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
             sphere.position.y = 60;
@@ -155,20 +146,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
             var materialSphere1 = new BABYLON.StandardMaterial("textures/wall1", scene);
             sphere.material = materialSphere1;
-
-
-/*4545
-        sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function(ev){
-            sphere.material.emissiveColor = BABYLON.Color3.Blue();
-            cursorIsOnTarget = true;
-        }));
-
-        sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function(ev){
-            sphere.material.emissiveColor = BABYLON.Color3.Black();
-            cursorIsOnTarget = false;
-        }));
-*/
-
 
 
         //premikanje vseh tarč
@@ -184,28 +161,21 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
 
-//premikanje ene tarče
-        /*
-        var angle=0;
-        scene.registerBeforeRender(function () {
-                sphere.position.x = 150 * Math.cos(angle);
-                sphere.position.z = 1060 * Math.sin(angle);
-                angle += 0.01 * scene.getAnimationRatio();
-
-        });
-*/
-
         //Strelanje animacija metkov in uničenje tarče
         var ammunition = 12;
         var allAmmunition = 36;
+        var flag1=true
         window.addEventListener("click", function (e) {
 
-            if(allAmmunition < 0)
+            if(allAmmunition < 0) {
                 document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
+                guntrigerclick.play();
+            }
             else {
                 if (ammunition > 0) {
                     var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
                     var startPos = cameraArcRotative[0].position;
+                   // var startPos = meshPlayer.position;
 
                     bullet.position = new BABYLON.Vector3(startPos.x, startPos.y, startPos.z);
                     bullet.material = new BABYLON.StandardMaterial("textures/bullet_bottom", scene);
@@ -213,10 +183,12 @@ window.addEventListener('DOMContentLoaded', function(){
                     bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
 
                     var invView = new BABYLON.Matrix();
-                    cameraArcRotative[0].getViewMatrix().invertToRef(invView);
+                     cameraArcRotative[0].getViewMatrix().invertToRef(invView);
+
                     var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
 
                     direction.normalize();
+                    gunshot.play();   //zvok strelanja
 
                     //Stetje metkov
                     ammunition--;
@@ -230,12 +202,17 @@ window.addEventListener('DOMContentLoaded', function(){
                             sphere.dispose();
                             bullet.dispose();
 
+
                         }
+
 
                         if(bullet.intersectsMesh(ammobox,false)){
                             ammobox.dispose();
-                                allAmmunition+=1;
-
+                            allAmmunition+=1;
+                            if(flag1) {
+                                flag1=false;
+                                boxbreak.play();
+                            }
                             
                         }
 
@@ -243,16 +220,19 @@ window.addEventListener('DOMContentLoaded', function(){
 
                 } else {
                     document.getElementById("ammoLabel").innerHTML = "You are out of ammo press R to reload!";
+                    guntrigerclick.play();
                 }
             }
         });
 
+        //reload on R
         function onKeyR(event) {
             var ch = String.fromCharCode(event.keyCode);
             if(ch == "R" || ch =="r") {
                 ammunition = 12;
                 allAmmunition = allAmmunition - ammunition;
                 document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
+                guncocking.play();
             }
 
         }

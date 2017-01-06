@@ -15,10 +15,12 @@ window.addEventListener('DOMContentLoaded', function(){
     var skeletonsPlayer = [];                               //tabela animacij, ki jih zna igralec
     var playerIsIdle = false;                               //vemo kdaj je animacija na premoru
     var sceneCharger = false;
-    var movmentSpeed = 1;                                   //nižja, ko je številka, večja hitrost [1-0)
     var cursorIsOnTarget = false;                          //vemo, če smo namerili v tarčo
     var start = 0;
     var end = 100;
+    var movmentSpeed = 0.5;                                   //nižja, ko je številka, večja hitrost [1-0)
+    var animationSpeed = parseFloat(250 / 100);                                 //hitrost animacije
+    var dudes = [];
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -57,12 +59,7 @@ window.addEventListener('DOMContentLoaded', function(){
             skeletonsPlayer[0] = skeletons[0];
             skeletonsPlayer.push(skeletons[0]);
 
-
-
             var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
-            //var start = 0;
-            //var end = 100;
-            var animationSpeed = 100 / 100;
             scene.beginAnimation(skeletons[0], 100*start/totalFrame, 100*end/totalFrame, true, animationSpeed);
 
             meshPlayer.checkCollisions = true;
@@ -70,16 +67,26 @@ window.addEventListener('DOMContentLoaded', function(){
             meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
             meshPlayer.applyGravity = true;
 
+            for (var i = 0; i < 5; i++) {
+                var xrand = Math.floor(Math.random() * 501) - 250;
+                var zrand = Math.floor(Math.random() * 501) - 250;
+                var c = [];
+                for (var j = 1; j < newMeshes.length; j++) {
+                    c[j] = newMeshes[j].clone("c" + j);
+                    c[j].position = new BABYLON.Vector3(xrand, 0, zrand);
+                    c[j].skeleton = newMeshes[j].skeleton.clone();
+                    scene.beginAnimation(c[j].skeleton, 0, 120, 1.0, true);
+                }
+                dudes = c;
+            }
         });
 
-
-/*
-        //Ulica(test)
-        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "street.babylon", scene, function (newMeshes) {
-            newMeshes[0].scaling = new BABYLON.Vector3(2, 2, 3);
-            cameraArcRotative[0].target = newMeshes[0]
-        });*/
-
+        BABYLON.SceneLoader.ImportMesh("","Scenes/ammobag/","uzi.babylon",scene,function (newMeshes) {
+            meshAmmobag = newMeshes[1].clone();
+            meshAmmobag.scaling = new BABYLON.Vector3(4, 4, 4);
+            meshAmmobag.position = new BABYLON.Vector3(4, 40, 4);
+            //cameraArcRotative[0].target = meshAmmobag;
+        });
 
         //Zvoki
         //Gun
@@ -88,16 +95,6 @@ window.addEventListener('DOMContentLoaded', function(){
         var guncocking = new BABYLON.Sound("guncocking", "sound/guncocking.wav", scene);
         //box
         var boxbreak = new BABYLON.Sound("boxbreak", "sound/boxbreak.wav", scene);
-
-
-
-        //ammo box... ne dela
-        BABYLON.SceneLoader.ImportMesh("ammobag","Scenes/ammobag/","ammobag.babylon",scene,function (newMeshes, particleSystems) {
-            meshAmmobag = newMeshes[0];
-            meshAmmobag.scaling = new BABYLON.Vector3(20, 20, 20);
-        });
-
-
 
 
         //Poslušanje tipk
@@ -300,7 +297,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var scene = createScene();
 
     scene.registerBeforeRender(function(){
-        if(scene.isReady() && meshPlayer) {
+        if(scene.isReady() && meshAmmobag && meshPlayer) {
             if(sceneCharger == false) {
                 sceneCharger = true;
             }
@@ -311,7 +308,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     engine.runRenderLoop(function () {
         scene.render();
-        if(scene.isReady() && meshPlayer){
+        if(scene.isReady() && meshAmmobag && meshPlayer){
 
             CameraFollowActor();                            //ali želimo, da kamera sledi igralcu
 

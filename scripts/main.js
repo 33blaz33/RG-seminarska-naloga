@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var end = 100;
     var movmentSpeed = 0.5;                                   //nižja, ko je številka, večja hitrost [1-0)
     var animationSpeed = parseFloat(250 / 100);                                 //hitrost animacije
-    var dudes = [];
+    var dudes = [];                                         //Nasportniki
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -67,7 +67,7 @@ window.addEventListener('DOMContentLoaded', function(){
             meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
             meshPlayer.applyGravity = true;
 
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 1; i++) {
                 var xrand = Math.floor(Math.random() * 501) - 250;
                 var zrand = Math.floor(Math.random() * 501) - 250;
                 var c = [];
@@ -79,8 +79,11 @@ window.addEventListener('DOMContentLoaded', function(){
                 }
                 dudes = c;
             }
-        });
 
+
+
+        });
+        //Orožje
         BABYLON.SceneLoader.ImportMesh("","Scenes/ammobag/","uzi.babylon",scene,function (newMeshes) {
             meshAmmobag = newMeshes[1].clone();
             meshAmmobag.scaling = new BABYLON.Vector3(4, 4, 4);
@@ -145,6 +148,8 @@ window.addEventListener('DOMContentLoaded', function(){
             sphere.material = materialSphere1;
 
 
+
+
         //premikanje vseh tarč
 
         var angle=0;
@@ -180,11 +185,16 @@ window.addEventListener('DOMContentLoaded', function(){
                     bullet.material.diffuseColor = new BABYLON.Color3(3, 2, 0);
 
                     var invView = new BABYLON.Matrix();
-                     cameraArcRotative[0].getViewMatrix().invertToRef(invView);
+                    cameraArcRotative[0].getViewMatrix().invertToRef(invView);
 
                     var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
 
+
+
                     direction.normalize();
+                    direction.x = direction.x / 0.06;
+                    direction.y = direction.y / 0.06;
+                    direction.z = direction.z /0.06;
                     gunshot.play();   //zvok strelanja
 
                     //Stetje metkov
@@ -213,6 +223,8 @@ window.addEventListener('DOMContentLoaded', function(){
                             
                         }
 
+
+
                     });
 
                 } else {
@@ -237,32 +249,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
 
-
-
-        /*var pointerlockchange = function (event) {
-            _this.controlEnabled = (
-            document.mozPointerLockElement === canvas
-            || document.webkitPointerLockElement === canvas
-            || document.msPointerLockElement === canvas
-            || document.pointerLockElement === canvas);
-            // If the user is alreday locked
-            if (!_this.controlEnabled) {
-                _this.camera.detachControl(canvas);
-            } else {
-                _this.camera.attachControl(canvas);
-            }
-        };
-
-        Nebo backup---
-         var skybox = BABYLON.Mesh.CreateSphere("skyBox", 32, 1000.0, scene);
-         skybox.position.y = 50;
-         var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-         skyboxMaterial.backFaceCulling = false;
-         skyboxMaterial.reflectionTexture = new BABYLON.Texture("textures/TropicalSunnyDay_px.jpg", scene);
-         //skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay_nz.jpg", scene);
-         skybox.material = skyboxMaterial;
-
-        */
 
 
         //Nebo
@@ -358,6 +344,9 @@ window.addEventListener('DOMContentLoaded', function(){
             forward = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshPlayer.rotation.y))) / movmentSpeed, 0.5, parseFloat(Math.cos(parseFloat(meshPlayer.rotation.y))) / movmentSpeed);
             forward = forward.negate();
             meshPlayer.moveWithCollisions(forward);
+
+
+
         }
 
         //ali je pritisnjen gumb za nazaj

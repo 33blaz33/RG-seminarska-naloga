@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var cameraArcRotative = [];                             //kamera
     var meshPlayer;                                         //naš igralec
     var meshGun;
+    var meshPlayer2;
     var PlayAnnimation = false;                             //ali animiramo našega igralca
     var meshOctree;
     var octree;
@@ -100,6 +101,20 @@ window.addEventListener('DOMContentLoaded', function(){
             meshGun.material.diffuseTexture = new BABYLON.Texture("textures/uzi.jpg", scene);
             //cameraArcRotative[0].target = meshAmmobag;
             //meshGun.rotationQuaternion = null;
+        });
+
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
+            meshPlayer2 = newMeshes[2];
+            skeletonsPlayer[0] = skeletons[0];
+            skeletonsPlayer.push(skeletons[0]);
+
+            var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
+            scene.beginAnimation(skeletons[0], 100*start/totalFrame, 100*end/totalFrame, true, animationSpeed);
+
+            meshPlayer.checkCollisions = true;
+            meshPlayer.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);    //treba se bo še malo poigrati s tem
+            meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
+            meshPlayer.applyGravity = true;
         });
 
         //Zvoki

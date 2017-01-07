@@ -26,6 +26,8 @@ window.addEventListener('DOMContentLoaded', function(){
     var originalPositions = [];
     var NUMBER_OF_SPHERES = 10;
     var originalSpeed = [];
+
+
     // createScene function that creates and return the scene
     var createScene = function(){
         //inicializacija scene
@@ -104,7 +106,7 @@ window.addEventListener('DOMContentLoaded', function(){
         });
 
         BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
-            meshPlayer2 = newMeshes[2];
+            meshPlayer2 = newMeshes[0];
             skeletonsPlayer[0] = skeletons[0];
             skeletonsPlayer.push(skeletons[0]);
 
@@ -251,12 +253,19 @@ window.addEventListener('DOMContentLoaded', function(){
                     scene.registerBeforeRender(function () {
                         bullet.position.addInPlace(direction);
 
+
+
                         for(var i = 0; i < NUMBER_OF_SPHERES; i++){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
                                 bullet.dispose();
                              }
                         }
+                        if (bullet.intersectsMesh(meshPlayer2, false)) {
+                            meshPlayer2.dispose();
+                            // bullet.dispose();
+                        }
+
 
                         /*if (bullet.intersectsMesh(sphere, false)) {
                             sphere.dispose();

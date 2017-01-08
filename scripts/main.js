@@ -240,7 +240,14 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("click", function (e) {
 
             //preveri ali si že pokončal vse sovražnike
-            if(NUMBER_OF_ALIVE_SPHERES == 0)
+            NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
+            for(var i = 0; i < NUMBER_OF_SPHERES; i++){
+                if(spheres[i].isDisposed())
+                    NUMBER_OF_ALIVE_SPHERES--;
+                console.log(NUMBER_OF_ALIVE_SPHERES);
+            }
+
+            if(NUMBER_OF_ALIVE_SPHERES == 1)
                 document.getElementById("winLabel").innerHTML = "You win";
 
             if(allAmmunition == 0 && ammunition == 0)
@@ -284,12 +291,10 @@ window.addEventListener('DOMContentLoaded', function(){
                         bullet.position.addInPlace(direction);
 
 
-
                         for(var i = 0; i < NUMBER_OF_SPHERES; i++){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
                                 bullet.dispose();
-                                console.log(NUMBER_OF_ALIVE_SPHERES);
                              }
                         }
                         if (bullet.intersectsMesh(meshPlayer2, false)) {
@@ -306,7 +311,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
                         if(bullet.intersectsMesh(ammobox,false)){
                             ammobox.dispose();
-                            allAmmunition+=5;
+                            allAmmunition+=6;
                             if(flag1) {
                                 flag1=false;
                                 boxbreak.play();

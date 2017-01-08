@@ -13,8 +13,8 @@ function Ground(scene) {
     var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
         'your-meshPlayer-name',
         '/path/to/heightmap.png',
-        1000, // width of the ground meshPlayer (x axis)
-        1000, // depth of the ground meshPlayer (z axis)
+        1500, // width of the ground meshPlayer (x axis)
+        1500, // depth of the ground meshPlayer (z axis)
         40,  // number of subdivisions
         1,   // min height
         2,  // max height

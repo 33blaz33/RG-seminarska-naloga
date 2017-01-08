@@ -26,11 +26,31 @@ window.addEventListener('DOMContentLoaded', function(){
     var originalPositions = [];
     var NUMBER_OF_SPHERES = 10;
     var originalSpeed = [];
+    var flag2 = true;
+
+    //ammo
+    var ammunition = 12;
+    var allAmmunition = 36 ;
+    var bonus;
+
+
+
+    function init(){
+
+        if(document.getElementById("easy").checked){
+            ammunition = 25;
+            allAmmunition = 100;
+
+
+        }
+
+    }
 
 
     // createScene function that creates and return the scene
     var createScene = function(){
         //inicializacija scene
+        //
 
         var scene = new BABYLON.Scene(engine);
         scene.setGravity(new BABYLON.Vector3(0, -10, 0));
@@ -88,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 dudes = c;
             }
 
-
+    //init();
 
         });
         //Orožje
@@ -126,6 +146,7 @@ window.addEventListener('DOMContentLoaded', function(){
         var guncocking = new BABYLON.Sound("guncocking", "sound/guncocking.wav", scene);
         //box
         var boxbreak = new BABYLON.Sound("boxbreak", "sound/boxbreak.wav", scene);
+
 
 
         //Poslušanje tipk
@@ -208,11 +229,8 @@ window.addEventListener('DOMContentLoaded', function(){
             angle += 0.01* scene.getAnimationRatio();*/
         });
 
-
-
         //Strelanje animacija metkov in uničenje tarče
-        var ammunition = 12;
-        var allAmmunition = 36;
+
         var flag1=true;
         window.addEventListener("click", function (e) {
 
@@ -259,6 +277,8 @@ window.addEventListener('DOMContentLoaded', function(){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
                                 bullet.dispose();
+
+
                              }
                         }
                         if (bullet.intersectsMesh(meshPlayer2, false)) {
@@ -275,7 +295,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
                         if(bullet.intersectsMesh(ammobox,false)){
                             ammobox.dispose();
-                            allAmmunition+=1;
+                            allAmmunition+=5;
                             if(flag1) {
                                 flag1=false;
                                 boxbreak.play();
@@ -297,13 +317,14 @@ window.addEventListener('DOMContentLoaded', function(){
         //reload on R
         function onKeyR(event) {
             var ch = String.fromCharCode(event.keyCode);
-            if(ch == "R" || ch =="r") {
-                ammunition = 12;
-                allAmmunition = allAmmunition - ammunition;
-                document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
-                guncocking.play();
+            if(allAmmunition > 0) {
+                if (ch == "R" || ch == "r") {
+                    ammunition = 12;
+                    allAmmunition = allAmmunition - ammunition;
+                    document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
+                    guncocking.play();
+                }
             }
-
         }
 
 
@@ -345,6 +366,8 @@ window.addEventListener('DOMContentLoaded', function(){
             }
             animateActor();
         }
+
+
     });
 
 
@@ -364,6 +387,10 @@ window.addEventListener('DOMContentLoaded', function(){
                 //}
             }
         }
+
+        //for(var i=0; i<NUMBER_OF_SPHERES; i++) {
+
+       // }
     });
 
     function animateActor()

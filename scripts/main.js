@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var NUMBER_OF_SPHERES = 10;
     var originalSpeed = [];
     var flag2 = true;
-
+    var meshUlica;
     //ammo
     var ammunition = 12;
     var allAmmunition = 36 ;
@@ -109,6 +109,14 @@ window.addEventListener('DOMContentLoaded', function(){
             }
 
     //init();
+
+            //Ulica
+
+            BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems) {
+                meshUlica = newMeshes[1];
+                meshUlica.scaling  = new BABYLON.Vector3(10, 10, 10);
+                meshUlica.position = new BABYLON.Vector3(5,-3,6);
+            });
 
         });
         //Orožje

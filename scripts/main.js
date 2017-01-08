@@ -3,14 +3,6 @@ var ammunition = 12;
 var allAmmunition = 36 ;
 var bonus;
 
-function init(){
-    if(document.getElementById("easy").checked){
-        ammunition = 25;
-        allAmmunition = 100;
-    }
-    ammunition = 100;
-}
-
 window.addEventListener('DOMContentLoaded', function(){
     //
     //GLOBALNE SPREMENLJIVKE
@@ -37,7 +29,8 @@ window.addEventListener('DOMContentLoaded', function(){
     var dudes = [];                                         //Nasportniki
     var spheres = [];
     var originalPositions = [];
-    var NUMBER_OF_SPHERES = 3;
+    //console.log(document.getElementById("numberspheres").value);
+    var NUMBER_OF_SPHERES = 10;
     var NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
     var originalSpeed = [];
     var flag2 = true;
@@ -67,13 +60,8 @@ window.addEventListener('DOMContentLoaded', function(){
 
         document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
         //place wall
-        /*
-        var Mur = BABYLON.Mesh.CreateBox("Mur", 1, scene);
-        Mur.scaling = new BABYLON.Vector3(200, 200, 1);
-        Mur.position.y = 50;
-        Mur.position.z = 50;
-        Mur.checkCollisions = true;
-        */
+
+
 
         //importaj našega igralca
         BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
@@ -90,6 +78,7 @@ window.addEventListener('DOMContentLoaded', function(){
             meshPlayer.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);    //treba se bo še malo poigrati s tem
             meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
             meshPlayer.applyGravity = true;
+
 
             meshPlayer.dispose();
             for (var i = 0; i < 1; i++) {
@@ -109,13 +98,20 @@ window.addEventListener('DOMContentLoaded', function(){
 
             //Ulica
 
-            BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems) {
-                meshUlica = newMeshes[1];
-                meshUlica.scaling  = new BABYLON.Vector3(10, 10, 10);
-                meshUlica.position = new BABYLON.Vector3(5,-3,6);
-            });
+
+
 
         });
+
+
+/*
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+            meshUlica = newMeshes[0];
+            meshUlica.scaling  = new BABYLON.Vector3(100, 100, 100);
+            meshUlica.position = new BABYLON.Vector3(5,-3,6);
+        });
+*/
+
         //Orožje
         BABYLON.SceneLoader.ImportMesh("","Scenes/ammobag/","uzi.babylon",scene,function (newMeshes) {
             meshGun = newMeshes[1];
@@ -175,17 +171,20 @@ window.addEventListener('DOMContentLoaded', function(){
         var ammobox = BABYLON.Mesh.CreateBox("ammobox1", 20, scene);
         ammobox.material = new BABYLON.StandardMaterial("Mat", scene);
         ammobox.material.diffuseTexture = new BABYLON.Texture("textures/ammobox.jpg", scene);
-        ammobox.position = new BABYLON.Vector3(10, 10, -100);
+        ammobox.position = new BABYLON.Vector3(500, 10, -100);
         ammobox.checkCollisions = true;
 
-/*
-        scene.registerBeforeRender(function () {
-            if (meshPlayer.intersectsMesh(ammobox, false)) {
-                ammobox.dispose();
-                allAmmunition = allAmmunition + 12;
-            }
-        });
-*/
+
+
+
+        /*
+                scene.registerBeforeRender(function () {
+                    if (meshPlayer.intersectsMesh(ammobox, false)) {
+                        ammobox.dispose();
+                        allAmmunition = allAmmunition + 12;
+                    }
+                });
+        */
 
 
         /*
@@ -247,11 +246,16 @@ window.addEventListener('DOMContentLoaded', function(){
                 console.log(NUMBER_OF_ALIVE_SPHERES);
             }
 
-            if(NUMBER_OF_ALIVE_SPHERES == 1)
-                document.getElementById("winLabel").innerHTML = "You win";
+            if(NUMBER_OF_ALIVE_SPHERES == 0){
+                alert("YOU WIN");
+                window.location.replace("index.html");
+            }
 
-            if(allAmmunition == 0 && ammunition == 0)
-                document.getElementById("winLabel").innerHTML = "You lose";
+            if(allAmmunition == 0 && ammunition == 0){
+                alert("YOU LOSE");
+                window.location.replace("index.html");
+            }
+                //document.getElementById("winLabel").innerHTML = "You lose";
 
             if(allAmmunition < 0) {
                 //document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
@@ -259,6 +263,8 @@ window.addEventListener('DOMContentLoaded', function(){
             }
             else {
                 if (ammunition > 0) {
+
+                    //Strelanje plaerja
                     var bullet = BABYLON.Mesh.CreateSphere('bullet', 3, 0.3, scene);
                     var startPos = cameraArcRotative[0].position;
                    // var startPos = meshPlayer.position;
@@ -280,6 +286,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     direction.y = direction.y / 0.06;
                     direction.z = direction.z /0.06;
                     gunshot.play();   //zvok strelanja
+
 
                     //Stetje metkov
                     ammunition--;
@@ -376,7 +383,7 @@ window.addEventListener('DOMContentLoaded', function(){
     var scene = createScene();
 
     scene.registerBeforeRender(function(){
-        if(scene.isReady() && meshGun && meshPlayer) {
+        if(scene.isReady() && meshGun && meshPlayer ) {
             if(sceneCharger == false) {
                 sceneCharger = true;
             }
@@ -389,7 +396,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     engine.runRenderLoop(function () {
         scene.render();
-        if(scene.isReady() && meshGun && meshPlayer){
+        if(scene.isReady() && meshGun && meshPlayer ){
 
             CameraFollowActor();                            //ali želimo, da kamera sledi igralcu
 

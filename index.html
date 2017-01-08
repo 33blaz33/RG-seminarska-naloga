@@ -48,18 +48,63 @@
 		}
 	</style>
 
+
+
 </head>
 <body style="background-color: black">
 <div id="gradient">
 <div id="menu">
+	<label id="allAmmo"></label>
+	<label id="ammo"></label>
+	<label id="numberspheres"></label>
 	<p><a href="game.html">PLAY</a> </p> <br>
 	<p id="text">DIFFICULTY:</p>
 	<form id="text2" action="">
-		<input type="radio" name="tezavnost" value="easy"> Easy<br>
-		<input type="radio" name="tezavnost" value="medium"> Meduim<br>
-		<input type="radio" name="tezavnost" value="hard"> Hard
+		<input type="radio" id="r1" name="tez" value="easy"> Easy<br>
+		<input type="radio" id="r2" name="tez" value="medium"> Meduim<br>
+		<input type="radio" id="r3" name="tez" value="hard"> Hard
 	</form>
 	<input type="button" onclick="init()" value="Save"/>
+
+	<script>
+		var ammunition=12;
+		var allAmmunition=36;
+		var numberSpheres=4;
+		function init(){
+			console.log("INTI()")
+			if(document.getElementById('r1').checked){
+				ammunition = 25;
+				allAmmunition = 100;
+				numberSpheres = 3;
+				document.getElementById("ammo").innerHTML = ammunition;
+				document.getElementById("allAmmo").innerHTML = allAmmunition;
+				document.getElementById("numberspheres").innerHTML = numberSpheres;
+
+			}
+			if(document.getElementById('r2').checked){
+				ammunition = 12;
+				allAmmunition = 36;
+				numberSpheres = 10;
+				document.getElementById("ammo").innerHTML = ammunition;
+				document.getElementById("allAmmo").innerHTML = allAmmunition;
+				document.getElementById("numberspheres").innerHTML = numberSpheres;
+
+			}
+			if(document.getElementById('r3').checked){
+				ammunition = 6;
+				allAmmunition = 24;
+				numberSpheres = 24;
+				document.getElementById("ammo").innerHTML = ammunition;
+				document.getElementById("allAmmo").innerHTML = allAmmunition;
+				document.getElementById("numberspheres").innerHTML = numberSpheres;
+
+			}
+
+		}
+
+
+
+	</script>
 
 </div>
 	</div>

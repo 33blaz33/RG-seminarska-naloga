@@ -1,3 +1,16 @@
+//ammo
+var ammunition = 12;
+var allAmmunition = 36 ;
+var bonus;
+
+function init(){
+    if(document.getElementById("easy").checked){
+        ammunition = 25;
+        allAmmunition = 100;
+    }
+    ammunition = 100;
+}
+
 window.addEventListener('DOMContentLoaded', function(){
     //
     //GLOBALNE SPREMENLJIVKE
@@ -24,28 +37,11 @@ window.addEventListener('DOMContentLoaded', function(){
     var dudes = [];                                         //Nasportniki
     var spheres = [];
     var originalPositions = [];
-    var NUMBER_OF_SPHERES = 10;
+    var NUMBER_OF_SPHERES = 3;
+    var NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
     var originalSpeed = [];
     var flag2 = true;
     var meshUlica;
-    //ammo
-    var ammunition = 12;
-    var allAmmunition = 36 ;
-    var bonus;
-
-
-
-    function init(){
-
-        if(document.getElementById("easy").checked){
-            ammunition = 25;
-            allAmmunition = 100;
-
-
-        }
-
-    }
-
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -69,6 +65,7 @@ window.addEventListener('DOMContentLoaded', function(){
         Light(scene);   //inicializacija luči in neba
         Ground(scene);  //inicializacija in izris tal
 
+        document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
         //place wall
         /*
         var Mur = BABYLON.Mesh.CreateBox("Mur", 1, scene);
@@ -242,8 +239,15 @@ window.addEventListener('DOMContentLoaded', function(){
         var flag1=true;
         window.addEventListener("click", function (e) {
 
+            //preveri ali si že pokončal vse sovražnike
+            if(NUMBER_OF_ALIVE_SPHERES == 0)
+                document.getElementById("winLabel").innerHTML = "You win";
+
+            if(allAmmunition == 0 && ammunition == 0)
+                document.getElementById("winLabel").innerHTML = "You lose";
+
             if(allAmmunition < 0) {
-                document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
+                //document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
                 guntrigerclick.play();
             }
             else {
@@ -285,8 +289,7 @@ window.addEventListener('DOMContentLoaded', function(){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
                                 bullet.dispose();
-
-
+                                console.log(NUMBER_OF_ALIVE_SPHERES);
                              }
                         }
                         if (bullet.intersectsMesh(meshPlayer2, false)) {

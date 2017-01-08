@@ -28,6 +28,13 @@
             color:white;
             font-size: 2em;
         }
+        #winLabel{
+            position:absolute;
+            top:50%;
+            left:50%;
+            margin-top:-37px;
+            margin-left:-37px;
+        }
         a{
             position:absolute;
             top:20px;
@@ -40,7 +47,8 @@
 <body>
 <img id="gunsight" src="textures/viseur.png" />
 <canvas id="renderCanvas"></canvas>
-<p id="ammoLabel">Ammo: 12</p>
+<p id="ammoLabel"></p>
+<p id="winLabel"></p>
 <a href="index.html">EXIT</a>
 </body>
 </html>

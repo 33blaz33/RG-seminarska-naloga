@@ -1,9 +1,9 @@
 //ammo
-var ammunition = 12;
-var MAG_SIZE = 12; //Velikost nabojnika
-var allAmmunition = 26;
+var ammunition ;
+var MAG_SIZE ; //Velikost nabojnika
+var allAmmunition ;
 var bonus;
-var NUMBER_OF_SPHERES = 3;
+var NUMBER_OF_SPHERES;
 
 var diff = (window.location.search).split("=");
 
@@ -25,7 +25,7 @@ if(diff[1] == "medium"){
 if(diff[1] == "hard"){
     ammunition = 6;
     MAG_SIZE = 6;
-        allAmmunition = 18;
+    allAmmunition = 18;
     NUMBER_OF_SPHERES = 20;
     console.log(diff[1]);
 }
@@ -42,25 +42,30 @@ window.addEventListener('DOMContentLoaded', function(){
     var meshPlayer;                                         //naš igralec
     var meshGun;
     var meshPlayer2;
+    var lastPosition;                                       //za preklaplanje med viewi da vemo kje narediti igralca
     var PlayAnnimation = false;                             //ali animiramo našega igralca
     var meshOctree;
     var octree;
     var skeletonsPlayer = [];                               //tabela animacij, ki jih zna igralec
     var playerIsIdle = false;                               //vemo kdaj je animacija na premoru
     var sceneCharger = false;
-    var cursorIsOnTarget = false;                          //vemo, če smo namerili v tarčo
-    var start = 0;
-    var end = 100;
-    var movmentSpeed = 0.5;                                   //nižja, ko je številka, večja hitrost [1-0)
-    var animationSpeed = parseFloat(250 / 100);                                 //hitrost animacije
-    var dudes = [];                                         //Nasportniki
-    var spheres = [];
-    var originalPositions = [];
+    var start = 0;                                          //kje smo na animaciji
+    var end = 100;                                          //kje smo na animaciji
+    var movmentSpeed = 0.5;                                 //nižja, ko je številka, večja hitrost [1-0)
+    var animationSpeed = parseFloat(250 / 100);             //hitrost animacije
+    var spheres = [];                                       //tarče
+    var originalPositions = [];                             //za pravilen izris in premikanje tarč
     //console.log(document.getElementById("numberspheres").value);
+    var NUMBER_OF_SPHERES = 10;                             //vse tarče
+    var NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;        //števec koliko tarč smo postrelili
+    var originalSpeed = [];                                 //hitrosti premikanja tarč
     var NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
     var originalSpeed = [];
     var flag2 = true;
     var meshUlica;
+    var togleView = false;                                  //za preklop med viewi
+    //ammo
+    var bonus;
 
     // createScene function that creates and return the scene
     var createScene = function(){
@@ -81,13 +86,10 @@ window.addEventListener('DOMContentLoaded', function(){
         cameraArcRotative[0].setTarget(new BABYLON.Vector3(10,40, 100));
         cameraArcRotative[0].attachControl(canvas, false);
 
-        Light(scene);   //inicializacija luči in neba
+        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
         Ground(scene);  //inicializacija in izris tal
 
         document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
-        //place wall
-
-
 
         //importaj našega igralca
         BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
@@ -123,15 +125,29 @@ window.addEventListener('DOMContentLoaded', function(){
 
         });
 
+        function importPlayer(dispose) {
+            //importaj našega igralca
+            BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
+                meshPlayer = newMeshes[0];
+                meshOctree = newMeshes;
+                //cameraArcRotative[0].alpha = -parseFloat(meshPlayer.rotation.y) + 2.69;     //kam je naš igralec obrnjen na začetku  +2.69
+                skeletonsPlayer[0] = skeletons[0];
+                skeletonsPlayer.push(skeletons[0]);
 
+                var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
+                scene.beginAnimation(skeletons[0], 100 * start / totalFrame, 100 * end / totalFrame, true, animationSpeed);
 
+                meshPlayer.checkCollisions = true;
+                meshPlayer.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);    //treba se bo še malo poigrati s tem
+                meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
+                meshPlayer.applyGravity = true;
 
-        BABYLON.SceneLoader.ImportMesh("", "Scenes/The city/", "untitled.babylon", scene, function (newMeshes) {
-            newMeshes.scaling =  new BABYLON.Vector3(500, 500, 500);
-            newMeshes.position.y = -200;
-            newMeshes.checkCollisions =true;
-        });
-
+                if(dispose)
+                    meshPlayer.dispose();
+            });
+        }
+        importPlayer(true);
+      
 /*
         BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems, skeletons) {
             meshUlica = newMeshes[0];
@@ -141,31 +157,33 @@ window.addEventListener('DOMContentLoaded', function(){
 */
 
         //Orožje
-        BABYLON.SceneLoader.ImportMesh("","Scenes/ammobag/","uzi.babylon",scene,function (newMeshes) {
-            meshGun = newMeshes[1];
-            meshGun.scaling  = new BABYLON.Vector3(2, 2, 2);
-            meshGun.position = new BABYLON.Vector3(5,-3,6);
-            meshGun.rotation.x = Math.PI / 1;
-            meshGun.rotation.z = Math.PI;
-            meshGun.parent = cameraArcRotative[0];
-            meshGun.material = new BABYLON.StandardMaterial("Mat", scene);
-            meshGun.material.diffuseTexture = new BABYLON.Texture("textures/uzi.jpg", scene);
-            //cameraArcRotative[0].target = meshAmmobag;
-            //meshGun.rotationQuaternion = null;
-        });
+        function importGun() {
+            BABYLON.SceneLoader.ImportMesh("","Scenes/ammobag/","uzi.babylon",scene,function (newMeshes) {
+                meshGun = newMeshes[1];
+                meshGun.scaling  = new BABYLON.Vector3(2, 2, 2);
+                meshGun.position = new BABYLON.Vector3(5,-3,6);
+                meshGun.rotation.x = Math.PI / 1;
+                meshGun.rotation.z = Math.PI;
+                meshGun.parent = cameraArcRotative[0];
+                meshGun.material = new BABYLON.StandardMaterial("Mat", scene);
+                meshGun.material.diffuseTexture = new BABYLON.Texture("textures/uzi.jpg", scene);
+            });
+        }
+        importGun();
 
         BABYLON.SceneLoader.ImportMesh("", "Scenes/Dude/", "dude.txt", scene, function (newMeshes, particleSystems, skeletons) {
             meshPlayer2 = newMeshes[0];
-            skeletonsPlayer[0] = skeletons[0];
-            skeletonsPlayer.push(skeletons[0]);
+            meshPlayer2.dispose();
+            //skeletonsPlayer[0] = skeletons[0];
+            //skeletonsPlayer.push(skeletons[0]);
 
-            var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
-            scene.beginAnimation(skeletons[0], 100*start/totalFrame, 100*end/totalFrame, true, animationSpeed);
+            //var totalFrame = skeletons[0]._scene._activeSkeletons.data.length;
+            //scene.beginAnimation(skeletons[0], 100*start/totalFrame, 100*end/totalFrame, true, animationSpeed);
 
-            meshPlayer.checkCollisions = true;
+            /*meshPlayer.checkCollisions = true;
             meshPlayer.ellipsoid = new BABYLON.Vector3(0.5, 1, 0.5);    //treba se bo še malo poigrati s tem
             meshPlayer.ellipsoidOffset = new BABYLON.Vector3(0, 2, 0);  //treba se bo še malo poigrati s tem
-            meshPlayer.applyGravity = true;
+            meshPlayer.applyGravity = true;*/
         });
 
         //Zvoki
@@ -182,12 +200,12 @@ window.addEventListener('DOMContentLoaded', function(){
         var smeh = new BABYLON.Sound("smeh", "sound/smeh1.mp3", scene);
 
 
+
         //Poslušanje tipk
         window.addEventListener("resize", function () { engine.resize();}); // the canvas/window resize event handler
         window.addEventListener("keydown", onKeyDown, false);
         window.addEventListener("keyup", onKeyUp, false);
         window.addEventListener("keydown", onKeyR, false);
-        window.addEventListener("keydown", onKeyL, false);
 
 
         //premikanje igralca, brez tiščanja miške
@@ -207,8 +225,17 @@ window.addEventListener('DOMContentLoaded', function(){
         ammobox.position = new BABYLON.Vector3(500, 10, -100);
         ammobox.checkCollisions = true;
 
-
-
+        /*
+        //Tarča
+        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
+        //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
+        sphere.position.y = 60;
+        sphere.position.x = 150;
+        sphere.position.z = -150;
+        sphere.isPickable = true;
+        sphere.checkCollisions = true;
+        sphere.actionManager = new BABYLON.ActionManager(scene);
+        sphere.material = new BABYLON.StandardMaterial("textures/wall1", scene);*/
 
         /*
                 scene.registerBeforeRender(function () {
@@ -219,14 +246,12 @@ window.addEventListener('DOMContentLoaded', function(){
                 });
         */
 
-
-
-
+        //itris vseh tarč
         for(var i = 0; i < NUMBER_OF_SPHERES; i++){
             var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
             sphere.position.y = 50;
-            sphere.position.x = Math.floor(Math.random() * 1000) + 1;
-            sphere.position.z = Math.floor(Math.random() * 1000) + 1;
+            sphere.position.x = Math.floor(Math.random() * 500) - 500;
+            sphere.position.z = Math.floor(Math.random() * 500) - 500;
             sphere.isPickable = true;
             sphere.checkCollisions = true;
             sphere.actionManager = new BABYLON.ActionManager(scene);
@@ -259,8 +284,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
         //Strelanje animacija metkov in uničenje tarče
 
-        var flag1=true;
-
+        var flag1 = true;
 
         window.addEventListener("click", function (e) {
             if(Math.floor((Math.random() * 20)) == 7){
@@ -313,13 +337,10 @@ window.addEventListener('DOMContentLoaded', function(){
                     cameraArcRotative[0].getViewMatrix().invertToRef(invView);
 
                     var direction = BABYLON.Vector3.TransformNormal(new BABYLON.Vector3(0, 0, 1), invView);
-
-
-
                     direction.normalize();
                     direction.x = direction.x / 0.06;
                     direction.y = direction.y / 0.06;
-                    direction.z = direction.z /0.06;
+                    direction.z = direction.z / 0.06;
                     gunshot.play();   //zvok strelanja
 
 
@@ -332,7 +353,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     scene.registerBeforeRender(function () {
                         bullet.position.addInPlace(direction);
 
-
+                        //če je bil trk, uniči tarčo in metek
                         for(var i = 0; i < NUMBER_OF_SPHERES; i++){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
@@ -343,17 +364,6 @@ window.addEventListener('DOMContentLoaded', function(){
                                 }
                              }
                         }
-                        if (bullet.intersectsMesh(meshPlayer2, false)) {
-                            meshPlayer2.dispose();
-                            // bullet.dispose();
-                        }
-
-
-                        /*if (bullet.intersectsMesh(sphere, false)) {
-                            sphere.dispose();
-                            bullet.dispose();
-                        }*/
-
 
                         if(bullet.intersectsMesh(ammobox,false)){
                             ammobox.dispose();
@@ -364,9 +374,6 @@ window.addEventListener('DOMContentLoaded', function(){
                             }
                             
                         }
-
-
-
                     });
 
                 } else {
@@ -387,14 +394,26 @@ window.addEventListener('DOMContentLoaded', function(){
                     guncocking.play();
                 }
             }
+            if (ch == "V" || ch == "v") {
+                //togle view
+                if(togleView){
+                    importGun();
+                    meshPlayer.dispose();
+                    togleView = false;
+                }
+                else{
+                    importPlayer(false);
+                    meshGun.dispose();
+                    togleView = true;
+                    //new BABYLON.Vector3(5,-3,6);
+                }
+            }
+
+            if (ch == "L" || ch == "l") {
+                smeh.play();
+            }
         }
 
-        function onKeyL(event) {
-            var ch = String.fromCharCode(event.keyCode);
-                if (ch == "L" || ch == "l") {
-                    smeh.play();
-                }
-        }
 
 
 
@@ -408,7 +427,6 @@ window.addEventListener('DOMContentLoaded', function(){
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/skybox", scene);
-
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 
 
@@ -448,7 +466,7 @@ window.addEventListener('DOMContentLoaded', function(){
             CameraFollowActor();                            //ali želimo, da kamera sledi igralcu
 
             if(playerIsIdle == false) {                    //ko igralec stoji, je animacija premikanja na premoru
-                scene.stopAnimation(skeletonsPlayer[0]);    //ustavi animacijo
+                scene.stopAnimation(skeletonsPlayer[0]);   //ustavi animacijo
                 playerIsIdle = true;                       //postavi pogoj, se ne premika
 
                 //octree = scene.createOrUpdateSelectionOctree();
@@ -457,10 +475,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 //}
             }
         }
-
-        //for(var i=0; i<NUMBER_OF_SPHERES; i++) {
-
-       // }
     });
 
     function animateActor()
@@ -474,11 +488,8 @@ window.addEventListener('DOMContentLoaded', function(){
         //animiraj hojo, če sta pritisnjena gumb za naprej, ali za nazaj
         if(PlayAnnimation === false && (keys.avancer == 1 || keys.arriere == 1 || keys.letft == 1 || keys.right == 1)) {
             var totalFrame = skeletonsPlayer[0]._scene._activeSkeletons.data.length;    //vsi frami animacije
-            //var start = 0;                                                              //koliko animacije izvedemo
-            //var end   = 100;                                                            //koliko animacije izvedemo
             var animationSpeed = parseFloat(100 / 100);                                 //hitrost animacije
 
-            //TO DO: POPRAVI, START IN END, ČE SE NEHAŠ PREMIKATI SREDI ANIMACIJE
             scene.beginAnimation(skeletonsPlayer[0],                                    //animiramo hojo
                                 (100 * start) / totalFrame,                             //kje je začetek animacije
                                 (100 * end) / totalFrame,                               //kje je konec animacije
@@ -502,36 +513,20 @@ window.addEventListener('DOMContentLoaded', function(){
             forward = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshPlayer.rotation.y))) / movmentSpeed, 0.5, parseFloat(Math.cos(parseFloat(meshPlayer.rotation.y))) / movmentSpeed);
             forward = forward.negate();
             meshPlayer.moveWithCollisions(forward);
-            forward = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshGun.rotation.y))) / movmentSpeed, 0.5, parseFloat(Math.cos(parseFloat(meshGun.rotation.y))) / movmentSpeed);
-            forward = forward.negate();
-            //meshGun.moveWithCollisions(forward);
-
-
         }
 
         //ali je pritisnjen gumb za nazaj
         else if (keys.arriere == 1) {
             backwards = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshPlayer.rotation.y))) / movmentSpeed, -0.5, parseFloat(Math.cos(parseFloat(meshPlayer.rotation.y))) / movmentSpeed);
             meshPlayer.moveWithCollisions(backwards);
-            //backwards = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshAmmobag.rotation.y))) / movmentSpeed, -0.5, parseFloat(Math.cos(parseFloat(meshAmmobag.rotation.y))) / movmentSpeed);
-            //meshAmmobag.moveWithCollisions(backwards);
         }
 
         //ali je pritisnjen gumb za levo
         else if (keys.letft == 1) {
-            //left = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshPlayer.rotation.y))) / movmentSpeed, -0.5, parseFloat(Math.cos(parseFloat(meshPlayer.rotation.y))) / movmentSpeed);
-            //meshPlayer.moveWithCollisions(left);
-            //left = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshGun.rotation.x))) / movmentSpeed, 0.5, parseFloat(Math.cos(parseFloat(meshGun.rotation.x))) / movmentSpeed);
-            //left = left.negate();
-            //meshGun.moveWithCollisions(left);
         }
 
         //ali je pritisnjen gumb za desno
         else if (keys.right == 1) {
-            //right = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshPlayer.rotation.y))) / movmentSpeed, -0.5, parseFloat(Math.cos(parseFloat(meshPlayer.rotation.y))) / movmentSpeed);
-            //meshPlayer.moveWithCollisions(right);
-            //right = new BABYLON.Vector3(parseFloat(Math.sin(parseFloat(meshGun.rotation.x))) / movmentSpeed, 0.5, parseFloat(Math.cos(parseFloat(meshGun.rotation.x))) / movmentSpeed);
-            //meshGun.moveWithCollisions(right);
         }
     }
 

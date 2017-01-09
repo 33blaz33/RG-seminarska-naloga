@@ -84,52 +84,52 @@
 	   width="2" height="0">
 </embed>
 <div id="gradient">
-<div id="menu">
-	<form action="game.html" method="GET">
+	<div id="menu">
+		<form action="game.html" method="GET">
 
-		<input type="text" id="tezavnost" name="tezavnost" />
+			<input type="text" id="tezavnost" name="tezavnost" />
 
-		<input id="submit" type="submit" value="PLAY" />
-	</form>
+			<input id="submit" type="submit" value="PLAY" />
+		</form>
 
-	<p id="text">DIFFICULTY:</p>
-	<form id="text2" action="">
-		<input type="radio" id="r1" name="tez" value="easy"> Easy<br>
-		<input type="radio" id="r2" name="tez" value="medium"> Meduim<br>
-		<input type="radio" id="r3" name="tez" value="hard"> Hard
-	</form>
-
-
-
-	<input id="submit1" type="button" onclick="init()" value="Save"/>
-
-	<script>
-		function hide() {
-			document.getElementById("tezavnost").style.visibility = "hidden";
-
-		}
-
-		function init(){
-
-
-			if(document.getElementById('r1').checked)
-				document.getElementById("tezavnost").defaultValue = "easy";
-
-			if(document.getElementById('r2').checked)
-				document.getElementById("tezavnost").defaultValue = "medium";
-
-			if(document.getElementById('r3').checked)
-				document.getElementById("tezavnost").defaultValue = "hard";
+		<p id="text">DIFFICULTY:</p>
+		<form id="text2" action="">
+			<input type="radio" id="r1" name="tez" value="easy"> Easy<br>
+			<input type="radio" id="r2" name="tez" value="medium"> Meduim<br>
+			<input type="radio" id="r3" name="tez" value="hard"> Hard
+		</form>
 
 
 
-		}
+		<input id="submit1" type="button" onclick="init()" value="Save"/>
+
+		<script>
+			function hide() {
+				document.getElementById("tezavnost").style.visibility = "hidden";
+
+			}
+
+			function init(){
+
+
+				if(document.getElementById('r1').checked)
+					document.getElementById("tezavnost").defaultValue = "easy";
+
+				if(document.getElementById('r2').checked)
+					document.getElementById("tezavnost").defaultValue = "medium";
+
+				if(document.getElementById('r3').checked)
+					document.getElementById("tezavnost").defaultValue = "hard";
 
 
 
-	</script>
+			}
 
-</div>
+
+
+		</script>
+
 	</div>
+</div>
 </body>
 </html>

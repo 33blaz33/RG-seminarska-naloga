@@ -147,14 +147,7 @@ window.addEventListener('DOMContentLoaded', function(){
             });
         }
         importPlayer(true);
-      
-/*
-        BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-            meshUlica = newMeshes[0];
-            meshUlica.scaling  = new BABYLON.Vector3(100, 100, 100);
-            meshUlica.position = new BABYLON.Vector3(5,-3,6);
-        });
-*/
+
 
         //Orožje
         function importGun() {

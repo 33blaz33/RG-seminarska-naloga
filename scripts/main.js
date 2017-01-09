@@ -179,6 +179,7 @@ window.addEventListener('DOMContentLoaded', function(){
         var crash = new BABYLON.Sound("crash", "sound/crash.wav", scene);
         //random event
         var thunder = new BABYLON.Sound("thunder", "sound/Thunder.wav", scene);
+        var smeh = new BABYLON.Sound("smeh", "sound/smeh.wav", scene);
 
 
         //Poslušanje tipk
@@ -186,6 +187,7 @@ window.addEventListener('DOMContentLoaded', function(){
         window.addEventListener("keydown", onKeyDown, false);
         window.addEventListener("keyup", onKeyUp, false);
         window.addEventListener("keydown", onKeyR, false);
+        window.addEventListener("keydown", onKeyL, false);
 
 
         //premikanje igralca, brez tiščanja miške
@@ -386,6 +388,14 @@ window.addEventListener('DOMContentLoaded', function(){
                 }
             }
         }
+
+        function onKeyL(event) {
+            var ch = String.fromCharCode(event.keyCode);
+                if (ch == "L" || ch == "l") {
+                    smeh.play();
+                }
+        }
+
 
 
         //Nebo

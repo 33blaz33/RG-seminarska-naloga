@@ -46,59 +46,78 @@
 			font-style: normal;
 			font-size: 120%;
 		}
+
+		#submit {
+			color: darkred;
+			font-family: "Lucida Console";
+			font-style: normal;
+			font-size: 200%;
+			background:none!important;
+			border:none;
+			padding:0!important;
+			/*border is optional*/
+			border-bottom:1px solid #444;
+			cursor: pointer;
+		}
+
+
+
+		#submit1 {
+			color: darkred;
+			font-family: "Lucida Console";
+			font-style: normal;
+			font-size: 120%;
+			background:none!important;
+			border:none;
+			padding:0!important;
+			/*border is optional*/
+			border-bottom:1px solid #444;
+			cursor: pointer;
+		}
 	</style>
 
 
 
 </head>
-<body style="background-color: black">
+<body style="background-color: black" onload="hide()">
 <div id="gradient">
 <div id="menu">
-	<label id="allAmmo"></label>
-	<label id="ammo"></label>
-	<label id="numberspheres"></label>
-	<p><a href="game.html">PLAY</a> </p> <br>
+	<form action="game.html" method="GET">
+
+		<input type="text" id="tezavnost" name="tezavnost" />
+
+		<input id="submit" type="submit" value="PLAY" />
+	</form>
+
 	<p id="text">DIFFICULTY:</p>
 	<form id="text2" action="">
 		<input type="radio" id="r1" name="tez" value="easy"> Easy<br>
 		<input type="radio" id="r2" name="tez" value="medium"> Meduim<br>
 		<input type="radio" id="r3" name="tez" value="hard"> Hard
 	</form>
-	<input type="button" onclick="init()" value="Save"/>
+
+
+
+	<input id="submit1" type="button" onclick="init()" value="Save"/>
 
 	<script>
-		var ammunition=12;
-		var allAmmunition=36;
-		var numberSpheres=4;
+		function hide() {
+			document.getElementById("tezavnost").style.visibility = "hidden";
+		}
+
 		function init(){
-			console.log("INTI()")
-			if(document.getElementById('r1').checked){
-				ammunition = 25;
-				allAmmunition = 100;
-				numberSpheres = 3;
-				document.getElementById("ammo").innerHTML = ammunition;
-				document.getElementById("allAmmo").innerHTML = allAmmunition;
-				document.getElementById("numberspheres").innerHTML = numberSpheres;
 
-			}
-			if(document.getElementById('r2').checked){
-				ammunition = 12;
-				allAmmunition = 36;
-				numberSpheres = 10;
-				document.getElementById("ammo").innerHTML = ammunition;
-				document.getElementById("allAmmo").innerHTML = allAmmunition;
-				document.getElementById("numberspheres").innerHTML = numberSpheres;
 
-			}
-			if(document.getElementById('r3').checked){
-				ammunition = 6;
-				allAmmunition = 24;
-				numberSpheres = 24;
-				document.getElementById("ammo").innerHTML = ammunition;
-				document.getElementById("allAmmo").innerHTML = allAmmunition;
-				document.getElementById("numberspheres").innerHTML = numberSpheres;
+			if(document.getElementById('r1').checked)
+				document.getElementById("tezavnost").defaultValue = "easy";
 
-			}
+			if(document.getElementById('r2').checked)
+				document.getElementById("tezavnost").defaultValue = "medium";
+
+			if(document.getElementById('r3').checked)
+				document.getElementById("tezavnost").defaultValue = "hard";
+
+
 
 		}
 

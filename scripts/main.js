@@ -1,7 +1,34 @@
 //ammo
-var ammunition = 12;
-var allAmmunition = 36 ;
+var ammunition;
+var MAG_SIZE; //Velikost nabojnika
+var allAmmunition;
 var bonus;
+var NUMBER_OF_SPHERES;
+
+var diff = (window.location.search).split("=");
+
+if(diff[1] == "easy"){
+    ammunition = 36;
+    MAG_SIZE = 36;
+    allAmmunition = 126;
+    NUMBER_OF_SPHERES = 4;
+
+    console.log(diff[1]);
+}
+if(diff[1] == "medium"){
+    ammunition = 12;
+    MAG_SIZE = 12;
+    allAmmunition = 72;
+    NUMBER_OF_SPHERES = 10;
+    console.log(diff[1]);
+}
+if(diff[1] == "hard"){
+    ammunition = 6;
+    MAG_SIZE = 6;
+        allAmmunition = 18;
+    NUMBER_OF_SPHERES = 20;
+    console.log(diff[1]);
+}
 
 window.addEventListener('DOMContentLoaded', function(){
     //
@@ -30,7 +57,6 @@ window.addEventListener('DOMContentLoaded', function(){
     var spheres = [];
     var originalPositions = [];
     //console.log(document.getElementById("numberspheres").value);
-    var NUMBER_OF_SPHERES = 10;
     var NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
     var originalSpeed = [];
     var flag2 = true;
@@ -94,12 +120,6 @@ window.addEventListener('DOMContentLoaded', function(){
                 dudes = c;
             }
 
-    //init();
-
-            //Ulica
-
-
-
 
         });
 
@@ -147,7 +167,10 @@ window.addEventListener('DOMContentLoaded', function(){
         var guncocking = new BABYLON.Sound("guncocking", "sound/guncocking.wav", scene);
         //box
         var boxbreak = new BABYLON.Sound("boxbreak", "sound/boxbreak.wav", scene);
-
+        //targetcrash
+        var crash = new BABYLON.Sound("crash", "sound/crash.wav", scene);
+        //random event
+        var thunder = new BABYLON.Sound("thunder", "sound/Thunder.wav", scene);
 
 
         //Poslušanje tipk
@@ -187,17 +210,7 @@ window.addEventListener('DOMContentLoaded', function(){
         */
 
 
-        /*
-        //Tarča
-        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
-        //sphere.scaling = new BABYLON.Vector3(1, 1, 1);
-        sphere.position.y = 60;
-        sphere.position.x = 150;
-        sphere.position.z = -150;
-        sphere.isPickable = true;
-        sphere.checkCollisions = true;
-        sphere.actionManager = new BABYLON.ActionManager(scene);
-        sphere.material = new BABYLON.StandardMaterial("textures/wall1", scene);*/
+
 
         for(var i = 0; i < NUMBER_OF_SPHERES; i++){
             var sphere = BABYLON.Mesh.CreateSphere('sphere1', 50, 50, scene);
@@ -211,6 +224,7 @@ window.addEventListener('DOMContentLoaded', function(){
             originalPositions.push(sphere);
             spheres.push(sphere);
             originalSpeed.push(randomSpeed());
+            sphere.flag = true;
         }
 
 
@@ -236,7 +250,16 @@ window.addEventListener('DOMContentLoaded', function(){
         //Strelanje animacija metkov in uničenje tarče
 
         var flag1=true;
+
+
         window.addEventListener("click", function (e) {
+            if(Math.floor((Math.random() * 20)) == 7){
+                if(flag2) {
+                    thunder.play();
+                    flag2=false;
+                }
+            }
+
 
             //preveri ali si že pokončal vse sovražnike
             NUMBER_OF_ALIVE_SPHERES = NUMBER_OF_SPHERES;
@@ -258,6 +281,8 @@ window.addEventListener('DOMContentLoaded', function(){
                 //document.getElementById("winLabel").innerHTML = "You lose";
 
             if(allAmmunition < 0) {
+                alert("YOU LOSE");
+                window.location.replace("index.html");
                 //document.getElementById("ammoLabel").innerHTML = "You are out of ammo! Pick up some ammoboxes!";
                 guntrigerclick.play();
             }
@@ -302,6 +327,10 @@ window.addEventListener('DOMContentLoaded', function(){
                             if (bullet.intersectsMesh(spheres[i], false)) {
                                 spheres[i].dispose();
                                 bullet.dispose();
+                                if(spheres[i].flag){
+                                    crash.play();
+                                    spheres[i].flag=false;
+                                }
                              }
                         }
                         if (bullet.intersectsMesh(meshPlayer2, false)) {
@@ -342,7 +371,7 @@ window.addEventListener('DOMContentLoaded', function(){
             var ch = String.fromCharCode(event.keyCode);
             if(allAmmunition > 0) {
                 if (ch == "R" || ch == "r") {
-                    ammunition = 12;
+                    ammunition = MAG_SIZE;
                     allAmmunition = allAmmunition - ammunition;
                     document.getElementById("ammoLabel").innerHTML = "Ammo: " + ammunition + "/" + allAmmunition;
                     guncocking.play();

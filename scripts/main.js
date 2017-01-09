@@ -124,6 +124,14 @@ window.addEventListener('DOMContentLoaded', function(){
         });
 
 
+
+
+        BABYLON.SceneLoader.ImportMesh("", "Scenes/The city/", "untitled.babylon", scene, function (newMeshes) {
+            newMeshes.scaling =  new BABYLON.Vector3(500, 500, 500);
+            newMeshes.position.y = -200;
+            newMeshes.checkCollisions =true;
+        });
+
 /*
         BABYLON.SceneLoader.ImportMesh("", "Scenes/enviroment/", "Mapa.babylon", scene, function (newMeshes, particleSystems, skeletons) {
             meshUlica = newMeshes[0];

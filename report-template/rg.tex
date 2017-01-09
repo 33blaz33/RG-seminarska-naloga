@@ -21,7 +21,7 @@
 \affiliation{	$^{1}$Univerza v Ljubljani, Fakulteta za računalništvo in informatiko \\ 
 				$^{2}$Univerza v Ljubljani, Fakulteta za računalništvo in informatiko }
 
-\email{E-pošta: ciril.bohak@fri.uni-lj.si}
+\email{E-pošta:lk8674@student.uni-lj.si}
 
 \maketitle
 
@@ -35,22 +35,6 @@ Igro sva naredila s pomočjo knjižnice BABYLON.
 
 \end{abstract}
 
-% -- Zgolj navodila - to v končni verziji dokumenta odstranite.
-\section*{Navodila}
-Ta dokument naj vam služi kot osnova za pisanje poročila o seminarju pri predmetu. Končno poročilo ne sme vsebovati več kot 4 strani besedila (skupaj s slikami lahko več), ne sme pa biti krajše od dveh strani vključno s slikami. Slike vključite v dokument kot kaže primer s sliko \ref{fig:slika} in se nanje tudi sklicujte. Prav tako v besedilu predstavite vsebino slik.
-
-\begin{figure}[!htb]
-    \begin{center}
-        \includegraphics[width=\columnwidth]{wolfenstein.jpg}
-        \caption{Kratek opis slike.} \label{fig:slika}
-    \end{center}
-\end{figure}
-
-Pri pisanju poročila vključujte tudi reference na vire s katerimi ste si pomagali pri izdelavi seminarja. To so lahko pisni viri v obliki knjig \cite{Foley1994}, člankov \cite{Meng2015} ali drugih virov, ki jih dodajte med reference, spletne vire pa navajajte v nogi\footnote{\url{https://en.wikipedia.org/wiki/Computer_graphics}}.
-
-Pri izdelavi igre se omejite na izdelavo enega samega nivoja igre, ki pa ga dodelajte in izpilite kolikor vam do\-pu\-šča predviden čas.
-
-% do sem gre ven
 
 
 
@@ -64,6 +48,12 @@ Igra ni zahtevna izgubiš jo lahko le, če namerno trošiš strelivo. Težavnost
 Pri streljanju moramo meriti malo pred tarčo, če jo želimo zadeti. Naboji niso neskončno hitri in potrebujejo nek čas, da priletijo do tarče.
 Igra je namenjena vsem ljudem, ki jih zanimajo strelske igrice.
 
+\begin{figure}[!htb]
+    \begin{center}
+        \includegraphics[width=\columnwidth]{slika2.png}
+        \caption{Zacetni meni} \label{fig:slika2}
+    \end{center}
+\end{figure}
 
 \subsection{Opis sveta}
 Naš svet je 2D ravnina, po katerem se premikamo le v 2D. Nad ravnino lebdijo sfere. Sfere predstavljajo sovražnike, ki jih moramo uničiti.
@@ -118,13 +108,22 @@ Ob igranju nam v zgornjem levem kotu prikazuje koliko nabojev imamo v magazinu i
 
 
 \section{Glasba in zvok}
-V naši igri je implementiran zvok, ki se predvaja ob strelu in zvok, ki se predvaja ob polnjenju nabojev. Pridobila sva ga iz KADUNC DOPOLNI. 
+ Pridobila sva ga iz sound bible (url:http://soundbible.com/), in pa posnela sama(smeh1.mp3).
+V igri je zvok: Loop glasba v začetnem meniju, Strel puške, reload, Ko je nabojnik prazen (trigger sound), Ko pritisnemo gumb L,random Event strela ,ob uničitve ammoBoxa in pa ob uničitvi tarče. 
+ 
 
 \section{Gameplay}
 Z tipkama W in S se lahko premikamo naprej in nazaj. Ob levem kliku miške streljamo. Ko nam zmanjka streliva, ga napolnimo z črko R.
 Če nam streliva začne primanjkovati lahko uničimo paket, da ga pridobimo nazaj. Da tarčo zadenemo, moramo meriti malo pred njo, ker naboji potrebujejo nek čas,
 da priletijo tja. Igro zmagamo tako, da pobijemo vse tarče, ki lebdijo. Če nam tega ne uspe igro žal izgubimo.
 Za spremembo načina igranja pritisnemo črko V. Na črko L je še implementirana skrita akcija.
+
+\begin{figure}[!htb]
+    \begin{center}
+        \includegraphics[width=\columnwidth]{slika1.png}
+        \caption{Prikaz igre} \label{fig:slika1}
+    \end{center}
+\end{figure}
 
 
 

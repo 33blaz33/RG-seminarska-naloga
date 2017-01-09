@@ -179,7 +179,7 @@ window.addEventListener('DOMContentLoaded', function(){
         var crash = new BABYLON.Sound("crash", "sound/crash.wav", scene);
         //random event
         var thunder = new BABYLON.Sound("thunder", "sound/Thunder.wav", scene);
-        var smeh = new BABYLON.Sound("smeh", "sound/smeh.wav", scene);
+        var smeh = new BABYLON.Sound("smeh", "sound/smeh1.mp3", scene);
 
 
         //Poslušanje tipk

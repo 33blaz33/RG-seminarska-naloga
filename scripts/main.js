@@ -1,9 +1,9 @@
 //ammo
-var ammunition;
-var MAG_SIZE; //Velikost nabojnika
-var allAmmunition;
+var ammunition = 12;
+var MAG_SIZE = 12; //Velikost nabojnika
+var allAmmunition = 26;
 var bonus;
-var NUMBER_OF_SPHERES;
+var NUMBER_OF_SPHERES = 3;
 
 var diff = (window.location.search).split("=");
 
